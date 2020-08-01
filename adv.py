@@ -95,7 +95,7 @@ class Graph:
         if len(unvisited_exits) > 0:
 
            if len(unvisited_exits) == 1:
-                self.dft(unvisited_exits[0], current_room)
+               self.dft(unvisited_exits[0], current_room)
            else:
                 # Recurse through a random unvisited exit
                 random_int = random.randint(0, len(unvisited_exits) - 1)
@@ -103,9 +103,6 @@ class Graph:
 
         else:
             path_to_nearest_unvisited = self.bfs(current_room)
-
-            if path_to_nearest_unvisited is None:
-               return
 
             # Get the destination room
             destination_room = path_to_nearest_unvisited[-1][0]
@@ -144,6 +141,9 @@ class Graph:
             # Get the current room, aka the last room in the path
             current_room = current_path[-1][0]
 
+            if current_room not in visited:
+                visited.add(current_room)
+
             # Get the unvisited exits of the current room
             unvisited_exits = self.get_unvisited_exits(current_room)
 
@@ -154,8 +154,9 @@ class Graph:
 
             # Iterate over the current room's exits
             for direction, room_id in self.visited[current_room].items():
-                # Enqueue a new path for each exit
-                q.enqueue(current_path + [(room_id, direction)])
+                if room_id not in visited:
+                    # Enqueue a new path for each unvisited exit
+                    q.enqueue(current_path + [(room_id, direction)])
 
         return None
 
@@ -186,9 +187,6 @@ traversal_path = []
 
 world_graph = Graph()
 world_graph.dft()
-
-print(traversal_path)
-print(world_graph.visited)
 
 # TRAVERSAL TEST - DO NOT MODIFY
 visited_rooms = set()
